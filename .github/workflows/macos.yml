@@ -329,6 +329,8 @@ jobs:
           find out -path '*ios-obj*' -name '*.d' | head -5 || true
           echo "== obj dirs"
           ls out/*/*/*/tree/build/xnu/ios-obj 2>/dev/null || true
+          echo "== global flags"
+          head -c 2000 out/*/*/*/tree/build/xnu/ios-obj/*/pong-global-compiler-flags.json 2>/dev/null || true
 
       - name: Summary
         if: always()
