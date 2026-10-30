@@ -60,7 +60,8 @@ else:
              '-DXNU_KERNEL_PRIVATE', '-DPRIVATE', '-D__MACHO__=1', '-Dvolatile=__volatile',
              '-DXNU_KERN_EVENT_DATA_IS_VLA', '-DCURRENT_MACHINE_CONFIG_LC=1',
              '-DXNU_TARGET_OS_IOS=1', '-D__arm64__', '-D__LP64__', '-fno-common',
-             '-fno-builtin', '-fno-stack-protector', '-fno-strict-aliasing', '-mstrict-align']
+             '-fno-builtin', '-fno-stack-protector', '-fno-strict-aliasing', '-mstrict-align',
+             '-Wno-macro-redefined', '-Wno-unused-command-line-argument']
     for name in ('osfmk', 'iokit', 'libkern', 'pexpert', 'bsd', 'security', 'san'):
         flags += ['-I', str(work / name)]
     for name in ('osfmk', 'iokit', 'libkern', 'pexpert', 'bsd', 'security'):
