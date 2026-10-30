@@ -203,7 +203,7 @@ def arm_io_window(hardware):
 
 
 STRINGS = {'compatible', 'device_type', 'reg-names', 'interrupt-names', 'clock-names', 'method'}
-U32 = {'phandle', 'linux,phandle', '#interrupt-cells', '#iommu-cells', '#clock-cells', 'clock-frequency', 'timebase-frequency', 'pong,smmu-stream-id', 'pong,ufs-spi', 'pong,smmu-context-banks', 'pong,smmu-match-groups'}
+U32 = {'phandle', 'linux,phandle', '#interrupt-cells', '#iommu-cells', '#clock-cells', 'clock-frequency', 'timebase-frequency', 'pong,smmu-stream-id', 'pong,ufs-spi', 'pong,smmu-context-banks', 'pong,smmu-match-groups', 'canvas-width', 'canvas-height'}
 U64 = {'redistributor-stride', 'pong,ufs-hc-base', 'pong,ufs-hc-size', 'pong,gcc-ufs-page', 'pong,smmu-base', 'pong,smmu-size'}
 FLAGS = {'interrupt-controller', 'dma-coherent'}
 REFERENCES = {'interrupt-parent': None, 'iommus': '#iommu-cells', 'clocks': '#clock-cells'}

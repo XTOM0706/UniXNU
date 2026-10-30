@@ -51,7 +51,10 @@ else:
         for match in re.finditer(r'(/[^\s\\:]+)/[^/\s\\:]+\.[hc]pp?', dependency.read_text()):
             if match.group(1) not in includes:
                 includes.append(match.group(1))
+    sdk = subprocess.run(['xcrun', '--show-sdk-path', '--sdk', 'iphoneos'],
+                         capture_output=True, text=True).stdout.strip()
     flags = ['-target', os.environ.get('DARWIN_TRIPLE', 'arm64-apple-ios17.0'),
+             *(['-isysroot', sdk] if sdk else []),
              '-std=gnu++17', '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics',
              '-fapple-kext', '-mkernel', '-D__KERNEL__', '-DXNU_TARGET_OS_IOS=1',
              '-DKERNEL=1', '-DPRIVATE=1', '-D__arm64__', '-D__LP64__', '-fno-common',
