@@ -56,8 +56,10 @@ else:
     flags = ['-target', os.environ.get('DARWIN_TRIPLE', 'arm64-apple-ios17.0'),
              *(['-isysroot', sdk] if sdk else []),
              '-std=gnu++17', '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics',
-             '-fapple-kext', '-mkernel', '-D__KERNEL__', '-DXNU_TARGET_OS_IOS=1',
-             '-DKERNEL=1', '-DPRIVATE=1', '-D__arm64__', '-D__LP64__', '-fno-common',
+             '-fapple-kext', '-mkernel', '-DAPPLE', '-DKERNEL', '-DKERNEL_PRIVATE',
+             '-DXNU_KERNEL_PRIVATE', '-DPRIVATE', '-D__MACHO__=1', '-Dvolatile=__volatile',
+             '-DXNU_KERN_EVENT_DATA_IS_VLA', '-DCURRENT_MACHINE_CONFIG_LC=1',
+             '-DXNU_TARGET_OS_IOS=1', '-D__arm64__', '-D__LP64__', '-fno-common',
              '-fno-builtin', '-fno-stack-protector', '-fno-strict-aliasing', '-mstrict-align']
     for name in ('osfmk', 'iokit', 'libkern', 'pexpert', 'bsd', 'security', 'san'):
         flags += ['-I', str(work / name)]
