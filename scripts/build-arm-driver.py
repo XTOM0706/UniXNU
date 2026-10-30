@@ -45,7 +45,7 @@ else:
     # XNU's makefile writes a .d next to every object but its -MJ records are not always
     # produced; fall back to the kernel's own include set, taken from the dependency file.
     work = ROOT / '.cache/xnu-work'
-    dependency = next(iter((ROOT / 'build/xnu/ios-obj').rglob(source.stem + '.d')), None)
+    dependency = next(iter((ROOT / 'build/xnu/ios-obj').rglob('*.d')), None)
     includes = []
     if dependency and dependency.is_file():
         for match in re.finditer(r'(/[^\s\\:]+)/[^/\s\\:]+\.[hc]pp?', dependency.read_text()):
@@ -58,7 +58,10 @@ else:
              '-fno-builtin', '-fno-stack-protector', '-fno-strict-aliasing', '-mstrict-align']
     for name in ('osfmk', 'iokit', 'libkern', 'pexpert', 'bsd', 'security', 'san'):
         flags += ['-I', str(work / name)]
-    flags += ['-I', str(ROOT / 'build/xnu/ios-obj/EXPORT_HDRS')]
+    for name in ('osfmk', 'iokit', 'libkern', 'pexpert', 'bsd', 'security'):
+        flags += ['-I', str(ROOT / 'build/xnu/ios-obj/EXPORT_HDRS' / name)]
+    flags += ['-I', str(ROOT / 'build/xnu/ios-obj/EXPORT_HDRS'),
+              '-I', str(ROOT / '.cache/fakeroot/usr/local/include')]
     for include in includes:
         flags += ['-I', include]
     record = {'file': str(source), 'directory': str(work),
