@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import re
 import tomllib
 from pathlib import Path
 import struct
@@ -35,10 +36,33 @@ if args.negative_verified_block and not args.verified_root:
 component = args.component
 recipe = ROOT / os.environ.get('UNIXNU_DRIVER_RECORD',
                                             'build/xnu/ios-obj/DEVELOPMENT_ARM64_BCM2837/iokit/DEVELOPMENT/IOPlatformExpert.cpo.json')
-record = json.loads(recipe.read_text().strip().rstrip(','))
 directory = 'GopFramebuffer' if runtime in ('NativeLegacyDisplay', 'NativeGOPPresenter') else 'AdrenoMetal' if runtime in ('NativeOfflineGPU', 'NativeOfflineAccelerator', 'NativeIOGPUProviderProbe') else identifier
 filename = next((name for name in metadata.get('source_files', []) if name.endswith('.cpp')), runtime + '.cpp')
 source = ROOT / 'drivers' / directory / filename
+if recipe.is_file():
+    record = json.loads(recipe.read_text().strip().rstrip(','))
+else:
+    # XNU's makefile writes a .d next to every object but its -MJ records are not always
+    # produced; fall back to the kernel's own include set, taken from the dependency file.
+    work = ROOT / '.cache/xnu-work'
+    dependency = next(iter((ROOT / 'build/xnu/ios-obj').rglob(source.stem + '.d')), None)
+    includes = []
+    if dependency and dependency.is_file():
+        for match in re.finditer(r'(/[^\s\\:]+)/[^/\s\\:]+\.[hc]pp?', dependency.read_text()):
+            if match.group(1) not in includes:
+                includes.append(match.group(1))
+    flags = ['-target', os.environ.get('DARWIN_TRIPLE', 'arm64-apple-ios17.0'),
+             '-std=gnu++17', '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics',
+             '-fapple-kext', '-mkernel', '-D__KERNEL__', '-DXNU_TARGET_OS_IOS=1',
+             '-DKERNEL=1', '-DPRIVATE=1', '-D__arm64__', '-D__LP64__', '-fno-common',
+             '-fno-builtin', '-fno-stack-protector', '-fno-strict-aliasing', '-mstrict-align']
+    for name in ('osfmk', 'iokit', 'libkern', 'pexpert', 'bsd', 'security', 'san'):
+        flags += ['-I', str(work / name)]
+    flags += ['-I', str(ROOT / 'build/xnu/ios-obj/EXPORT_HDRS')]
+    for include in includes:
+        flags += ['-I', include]
+    record = {'file': str(source), 'directory': str(work),
+              'arguments': ['clang', '-c', str(source), '-o', 'unused.o', *flags]}
 outputs = metadata.get('outputs', [])
 archive_output = next((path for path in outputs if path.endswith('.a')), None)
 aux_dirs = {'NativeLegacyDisplay':'native-legacy-display', 'NativeGOPPresenter':'native-gop-presenter',
