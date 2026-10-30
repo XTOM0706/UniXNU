@@ -55,7 +55,7 @@ else:
                          capture_output=True, text=True).stdout.strip()
     flags = ['-target', os.environ.get('DARWIN_TRIPLE', 'arm64-apple-ios17.0'),
              *(['-isysroot', sdk] if sdk else []),
-             '-std=gnu++17', '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics',
+             '-std=gnu++2b', '-fsized-deallocation', '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics',
              '-fapple-kext', '-mkernel', '-DAPPLE', '-DKERNEL', '-DKERNEL_PRIVATE',
              '-DXNU_KERNEL_PRIVATE', '-DPRIVATE', '-D__MACHO__=1', '-Dvolatile=__volatile',
              '-DXNU_KERN_EVENT_DATA_IS_VLA', '-DCURRENT_MACHINE_CONFIG_LC=1',
