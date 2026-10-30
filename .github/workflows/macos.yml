@@ -320,6 +320,16 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+      - name: List compile records
+        if: always()
+        run: |
+          echo "== json"
+          find out -path '*ios-obj*' -name '*.json' | head -20 || true
+          echo "== dep"
+          find out -path '*ios-obj*' -name '*.d' | head -5 || true
+          echo "== obj dirs"
+          ls out/*/*/*/tree/build/xnu/ios-obj 2>/dev/null || true
+
       - name: Summary
         if: always()
         env:
